@@ -1,6 +1,6 @@
 <?php
 
-namespace BukukwasikuPackage\Infrastructure\Eloquent\Traits;
+namespace BukukwasikuPackage\Infrastructure\Eloquent\Models\Traits;
 
 use Illuminate\Support\Facades\Request;
 

@@ -1,18 +1,18 @@
 <?php
 
-use BukukwasikuPackage\Infrastructure\Eloquent\MemberDetails;
-use BukukwasikuPackage\Infrastructure\Eloquent\Order;
-use BukukwasikuPackage\Infrastructure\Eloquent\OrderItem;
-use BukukwasikuPackage\Infrastructure\Eloquent\Payment;
-use BukukwasikuPackage\Infrastructure\Eloquent\Product;
-use BukukwasikuPackage\Infrastructure\Eloquent\ProductCategory;
-use BukukwasikuPackage\Infrastructure\Eloquent\Scopes\VendorScope;
-use BukukwasikuPackage\Infrastructure\Eloquent\Vendor;
-use BukukwasikuPackage\Infrastructure\Eloquent\VendorOrder;
-use BukukwasikuPackage\Infrastructure\Eloquent\Wallet;
-use BukukwasikuPackage\Infrastructure\Eloquent\Wallet\NafuuWallet;
-use BukukwasikuPackage\Infrastructure\Eloquent\Wallet\Transaction;
-use BukukwasikuPackage\Infrastructure\Eloquent\WalletWithdraw;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\MemberDetails;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\Order;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\OrderItem;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\Payment;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\Product;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\ProductCategory;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\Scopes\VendorScope;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\Vendor;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\VendorOrder;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\Wallet;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\Wallet\NafuuWallet;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\Wallet\Transaction;
+use BukukwasikuPackage\Infrastructure\Eloquent\Models\WalletWithdraw;
 use BukukwasikuPackage\Presentation\Services\SmsService;
 
 return [

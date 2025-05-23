@@ -1,6 +1,6 @@
 <?php
 
-namespace BukukwasikuPackage\Infrastructure\Eloquent\Scopes;
+namespace BukukwasikuPackage\Infrastructure\Eloquent\Models\Scopes;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;

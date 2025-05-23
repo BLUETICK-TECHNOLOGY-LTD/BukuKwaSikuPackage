@@ -1,6 +1,6 @@
 <?php
 
-namespace BukukwasikuPackage\Infrastructure\Eloquent;
+namespace BukukwasikuPackage\Infrastructure\Eloquent\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
