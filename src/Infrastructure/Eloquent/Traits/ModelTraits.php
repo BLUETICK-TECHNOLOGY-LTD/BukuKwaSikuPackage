@@ -9,11 +9,11 @@ trait ModelTraits
     public $per_page_limit = 20;
     public function scopeLimitTake($query)
     {
-        $per_page = Request::input('per_page', $this->per_page_limit);
+        $per_page = request()->input('per_page', $this->per_page_limit);
         $per_page = is_numeric($per_page) ? $per_page : $this->per_page_limit;
         $per_page = intval($per_page);
 
-        $offset = Request::input('page', 0);
+        $offset = request()->input('page', 0);
         $offset = is_numeric($offset) ? $offset : 0;
         $offset = intval($offset);
 
@@ -22,7 +22,7 @@ trait ModelTraits
 
     public function scopeRelated($query)
     {
-        foreach ($this->relates ?? explode(',', Request::input('related', '')) as $related) {
+        foreach ($this->relates ?? explode(',', request()->input('related', '')) as $related) {
             if (method_exists($this, $related)) {
                 $query->with(trim($related));
             }

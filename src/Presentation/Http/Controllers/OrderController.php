@@ -278,7 +278,7 @@ class OrderController extends Controller
             if (Request::filled("payment")) {
                 if ($request->payment_method == 3) {
                     $response = static::installmentBukuKwaSiku($orderItems);
-                } else if (Request::input('payment') == "installment") {
+                } else if (request()->input('payment') == "installment") {
                     if ($request->amount > 0) {
                         $response = $this->makePayment($request, $orderModel);
                     } else {
