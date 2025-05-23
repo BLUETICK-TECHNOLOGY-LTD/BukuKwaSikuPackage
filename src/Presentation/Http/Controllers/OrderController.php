@@ -22,9 +22,9 @@ class OrderController extends Controller
     public function userOrders()
     {
         $categoryFilter = function ($category) {
-            if (Request::has('saving')) {
+            if (request()->has('saving')) {
                 $category->where('slug', 'savings');
-            } else if (Request::has('memberships')) {
+            } else if (request()->has('memberships')) {
                 $category->where('slug', 'memberships');
             } else {
                 $category->where('slug', '!=', 'savings')->where('slug', '!=', 'memberships');
@@ -51,7 +51,7 @@ class OrderController extends Controller
     {
         $orderModel = Config::get('bukukwasiku.order.model');
         $singleOrder = $orderModel::where('id', $orderId)->with('orderItems');
-        if (Request::has('saving')) {
+        if (request()->has('saving')) {
             $singleOrder->with('orderSavingItems');
         }
         $singleOrder = $singleOrder->first();

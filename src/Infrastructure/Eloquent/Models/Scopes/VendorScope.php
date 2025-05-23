@@ -22,8 +22,8 @@ class VendorScope implements Scope
         if (Auth::check()) {
             if (Schema::hasColumn($model->getTable(), "vendor_id")) {
                 $user = Auth::user();
-                if (!Request::has("no-vendor-id")) {
-                    if (Request::has('vendor')) {
+                if (!request()->has("no-vendor-id")) {
+                    if (request()->has('vendor')) {
                         $builder->where($model->getTable() . '.vendor_id', Session::get("vendor_id", Request::input('vendor')));
                     } else {
                         $builder->where($model->getTable() . '.vendor_id', Session::get("vendor_id", $user->vendor_id));
@@ -33,7 +33,7 @@ class VendorScope implements Scope
         } else {
             if (Schema::hasColumn($model->getTable(), "vendor_id")) {
                 $vendor = Request::input('vendor');
-                if (!Request::has("no-vendor-id")) {
+                if (!request()->has("no-vendor-id")) {
                     $builder->where($model->getTable() . '.vendor_id', Session::get("vendor_id", $vendor));
                 }
             }
