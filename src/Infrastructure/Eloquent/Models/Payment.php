@@ -32,7 +32,10 @@ class Payment extends Model
     {
         parent::boot();
         static::creating(function ($model) {
-            $model->id = (string) Str::uuid();
+            $type = Config::get('bukukwasiku.payment.type', 'interger');
+            if ($type != "interger") {
+                $model->id = (string) Str::uuid();
+            }
         });
     }
     public function payable()

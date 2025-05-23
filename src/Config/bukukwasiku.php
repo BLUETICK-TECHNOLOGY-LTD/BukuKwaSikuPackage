@@ -98,6 +98,8 @@ return [
         "model" => Payment::class,
         "foreign_key" => "payment_id",
 
+        "type" =>  "string",
+
         "minimum_amount" => 100,
 
         "push_payment_url" => 'https://payment.bluetick.co.tz/api/v1/push-payment-request',
