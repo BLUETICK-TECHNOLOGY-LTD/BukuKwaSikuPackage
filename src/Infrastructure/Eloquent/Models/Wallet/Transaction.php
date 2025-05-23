@@ -1,6 +1,6 @@
 <?php
 
-namespace BukukwasikuPackage\Presentation\Models\Wallet;
+namespace BukukwasikuPackage\Infrastructure\Eloquent\Wallet;
 
 use Carbon\Carbon;
 use Exception;

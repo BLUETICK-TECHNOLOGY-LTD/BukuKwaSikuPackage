@@ -1,6 +1,6 @@
 <?php
 
-namespace BukukwasikuPackage\Presentation\Models;
+namespace BukukwasikuPackage\Infrastructure\Eloquent;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

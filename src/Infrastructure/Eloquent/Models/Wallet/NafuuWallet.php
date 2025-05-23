@@ -1,8 +1,8 @@
 <?php
 
-namespace BukukwasikuPackage\Presentation\Models\Wallet;
+namespace BukukwasikuPackage\Infrastructure\Eloquent\Wallet;
 
-use BukukwasikuPackage\Presentation\Models\Traits\Tariffs;
+use BukukwasikuPackage\Infrastructure\Eloquent\Traits\Tariffs;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

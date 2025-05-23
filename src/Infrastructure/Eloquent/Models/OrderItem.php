@@ -1,6 +1,6 @@
 <?php
 
-namespace BukukwasikuPackage\Presentation\Models;
+namespace BukukwasikuPackage\Infrastructure\Eloquent;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
