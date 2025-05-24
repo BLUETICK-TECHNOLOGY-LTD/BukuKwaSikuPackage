@@ -23,7 +23,7 @@ return [
     ],
 
     "sms" => [
-        "service" => SmsService::class, 
+        "service" => SmsService::class,
         "function" => "sendSms",
         "sms" => "An amount of :amount has been debited from account :bkb_reference charges are :fee. If this was not authorized, please call +255655922084 immediately.",
         "params" => [
@@ -105,12 +105,14 @@ return [
         "push_payment_url" => 'https://payment.bluetick.co.tz/api/v1/push-payment-request',
         "verification" => "https://payment.bluetick.co.tz/api/payment-verification",
 
-        // "payment_url" => route('api.wallet.deposit.verify'),
-        // "order_payment_url" => route('api.wallet.deposit.verify'),
+        "base_url" => "http://121.0.0.7:8000/api/",
 
-        // "payment_callback" => route('api.payment-callback'),
-        // "notification_callback" => route('api.notification-callback'),
-        // "bukukwasiku_payment_callback" => route('api.bukukwasiku.payment.verify'),
+        "payment_url" => env('APP_API_BASE_URL')  . "nafuu/wallet/deposit/callback",
+        "order_payment_url" => env('APP_API_BASE_URL')  . "nafuu/wallet/deposit/callback",
+
+        "payment_callback" => env('APP_API_BASE_URL')  . "payment-callback",
+        "notification_callback" =>env('APP_API_BASE_URL')  . "notification-callback",
+        "bukukwasiku_payment_callback" => env('APP_API_BASE_URL')  . "nafuu/wallet/deposit/callback",
     ],
 
     "order" => [
