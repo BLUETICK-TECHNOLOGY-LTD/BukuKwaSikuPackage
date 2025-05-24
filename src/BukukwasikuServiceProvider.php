@@ -14,7 +14,9 @@ class BukukwasikuServiceProvider extends ServiceProvider
     public function boot()
     {
         // Register routes
-        $this->registerRoutes();
+        if (!$this->app->runningInConsole()) {
+            $this->registerRoutes();
+        }
 
         // Register migrations
         $this->loadMigrationsFrom(__DIR__ . '/Migrations');
