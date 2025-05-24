@@ -372,7 +372,7 @@ class OrderController extends Controller
             try {
                 $whitelistedPhones = explode(',', env('WHITELISTED_PHONES'));
                 $data = [
-                    'reference' => 'FNO' . $payment->id,
+                    'reference' => Config::get('bukukwasiku.payment.initial') . $payment->id,
                     "msisdn" => $payment->msisdn,
                     "amount" => in_array($payment->msisdn, $whitelistedPhones) ? 100 : $payment->amount,
                     "network" => $payment->payment_method,
@@ -442,7 +442,7 @@ class OrderController extends Controller
         ]);
         try {
             $data = [
-                'reference' => 'FNO' . $payment->id,
+                'reference' => Config::get('bukukwasiku.payment.initial') . $payment->id,
             ];
 
             $response = $client->request('POST', Config::get('bukukwasiku.payment.verification'), [
@@ -456,7 +456,7 @@ class OrderController extends Controller
                 if (isset($results['success']) && $results['success'] === true) {
                     DB::commit();
                     $results['success'] = $results['success'] ? "success" : "failed";
-                    $results['reference'] = 'FNO' . $payment->id;
+                    $results['reference'] = Config::get('bukukwasiku.payment.initial') . $payment->id;
                     Request::merge($results);
                     return $this->orderPaymentCallback(new Request());
                 } else {
@@ -513,7 +513,7 @@ class OrderController extends Controller
                         ], 404);
                     }
 
-                    $reference = str_replace('FNO', '', $request->reference);
+                    $reference = str_replace(Config::get('bukukwasiku.payment.initial'), '', $request->reference);
                     $payment = $paymentConfigModel::whereId($reference)->first();
                     if (!$payment) {
                         return Response::json([

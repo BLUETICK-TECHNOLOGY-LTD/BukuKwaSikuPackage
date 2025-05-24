@@ -113,6 +113,8 @@ return [
         "payment_callback" => env('APP_API_BASE_URL')  . "payment-callback",
         "notification_callback" =>env('APP_API_BASE_URL')  . "notification-callback",
         "bukukwasiku_payment_callback" => env('APP_API_BASE_URL')  . "nafuu/wallet/deposit/callback",
+
+        "initial" => "FNO",
     ],
 
     "order" => [
