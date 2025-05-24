@@ -2,6 +2,7 @@
 
 namespace BukukwasikuPackage;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,9 +15,7 @@ class BukukwasikuServiceProvider extends ServiceProvider
     public function boot()
     {
         // ✅ Avoid route registration when running in CLI (composer, artisan)
-        if (!$this->app->runningInConsole()) {
-            $this->registerRoutes();
-        }
+        $this->registerRoutes();
 
         $this->loadMigrationsFrom(__DIR__ . '/Migrations');
 
@@ -48,13 +47,13 @@ class BukukwasikuServiceProvider extends ServiceProvider
 
     protected function registerRoutes()
     {
-        // ✅ Extra check, though already guarded in boot()
-        if ($this->app->runningInConsole()) {
-            return;
-        }
 
-        Route::prefix('api')
-            ->middleware('api')
-            ->group(__DIR__ . '/Presentation/Http/Routes/api.php');
+        try {
+            Route::prefix('api')
+                ->middleware('api')
+                ->group(__DIR__ . '/Presentation/Http/Routes/api.php');
+        } catch (\Throwable $e) {
+            Log::error("Failed to register API routes: " . $e->getMessage());
+        }
     }
 }
