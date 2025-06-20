@@ -21,4 +21,6 @@ class Vendor extends Model
             $model->id = (string) Str::uuid();
         });
     }
+
+    protected $guarded = [];
 }

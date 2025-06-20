@@ -12,4 +12,6 @@ class ProductCategory extends Model
         parent::__construct($attributes);
         $this->table = Config::get('bukukwasiku.product_category.table', 'product_categories');
     }
+
+     protected $guarded = [];
 }
