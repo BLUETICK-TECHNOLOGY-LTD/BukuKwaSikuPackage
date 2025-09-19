@@ -241,6 +241,7 @@ class NafuuWalletController extends Controller
     {
         $whitelistedIps = ['204.236.147.142'];
         if (!in_array($request->ip(), $whitelistedIps)) {
+            Log::info('PAYMENT VERIFY: IP not authorized');
             return Response::json([
                 "message" => "Unauthorized",
             ], 403);
@@ -251,6 +252,7 @@ class NafuuWalletController extends Controller
             if ($request->has('status')) {
                 if ($request->status == "success") {
                     if (!$request->has('reference') || empty($request->reference)) {
+                        Log::info('PAYMENT VERIFY: Reference is required');
                         return Response::json([
                             "success" => false,
                             "message" => "Reference is required.",
@@ -258,6 +260,7 @@ class NafuuWalletController extends Controller
                     }
                     $payment = $paymentModel::where('receipt', $request->payment_reference)->first();
                     if ($payment) {
+                        Log::info('PAYMENT VERIFY: Payment has been utilized');
                         return Response::json([
                             "success" => false,
                             "message" => "Payment has been utilized.",
@@ -269,6 +272,7 @@ class NafuuWalletController extends Controller
                     ]);
                     $payment = $paymentModel::whereId($request->reference)->first();
                     if (!$payment) {
+                        Log::info('PAYMENT VERIFY: Reference Not found');
                         return Response::json([
                             "success" => false,
                             "message" => "Reference Not found",
@@ -282,6 +286,7 @@ class NafuuWalletController extends Controller
                     $user = $payment->payable;
                     $transactionModel::transact($user, $payment->amount, $transactionModel::DEPOSIT, $payment->remarks, $payment, true);
 
+                    Log::info('PAYMENT VERIFY: Payment Succefully');
                     return Response::json([
                         "success" => true,
                         "message" => "Payment Succefully",
@@ -289,11 +294,13 @@ class NafuuWalletController extends Controller
                 }
             }
         } catch (Exception $e) {
+            Log::info('PAYMENT VERIFY: ' . $e->getMessage());
             return Response::json([
                 "success" => true,
                 "message" => "Internal Server Error",
             ], 500);
         }
+        Log::info('PAYMENT VERIFY: Payment Reference Not found');
         return Response::json([
             "success" => false,
             "message" => "Payment Reference Not found",
