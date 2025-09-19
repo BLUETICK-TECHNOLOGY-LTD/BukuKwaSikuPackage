@@ -96,6 +96,7 @@ class OrderController extends Controller
             "amount" => str_replace(',', '', $request->amount),
         ]);
 
+        $this->logError(message: "Make Payment Started");
         $validate = Validator::make($request->all(), [
             'orders' => 'required',
             'payment' => ['required', Rule::in(['cash', 'installment'])],
@@ -106,6 +107,7 @@ class OrderController extends Controller
             "amount" => $request->payment == "installment" ? "" : "required|numeric",
         ]);
         if ($validate->fails()) {
+            $this->logError(message: "Failed with " . $validate->errors()->first());
             return Response::json([
                 "success" => false,
                 "message" => $validate->errors()->first(),
@@ -113,12 +115,14 @@ class OrderController extends Controller
             ], 422);
         }
         try {
+            $this->logError(message: "Check Order details");
             if (is_string($request->orders)) {
                 $request->merge([
                     'orders' => json_decode($request->orders, true)
                 ]);
             }
         } catch (Exception $e) {
+            $this->logError(message: $e->getMessage());
             return Response::json([
                 "success" => false,
                 "message" => $e->getMessage()
@@ -129,6 +133,7 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
             if (is_array($request->orders)) {
+                $this->logError(message: "Start ordering");
                 $totalAmount = 0;
                 $totalInitialDeposit = 0;
                 foreach ($request->orders as $order) {
@@ -144,7 +149,9 @@ class OrderController extends Controller
                         ]
                     );
                 }
+                
                 // CHECK IF IS SUFFICIENT BALANCE WHEN SELECTED PAYMENT METHOD IS WALLET
+                $this->logError(message: "CHECK IF IS SUFFICIENT BALANCE WHEN SELECTED PAYMENT METHOD IS WALLET");
                 if ($request->payment_method == Config::get('bukukwasiku.transaction.nafuu_id')) { // is nafuu wallet
                     $transactionModel = Config::get('bukukwasiku.transaction.model');
                     $checkSufficientFn = Config::get('bukukwasiku.transaction.checkBalance');
@@ -154,6 +161,7 @@ class OrderController extends Controller
                         }
                     } catch (Exception $e) {
                         DB::rollBack();
+                        $this->logError(message: $e->getMessage());
                         return Response::json([
                             'success' => false,
                             "message" => $e->getMessage(),
@@ -170,6 +178,7 @@ class OrderController extends Controller
                     ]
                 );
                 if ($orderModel->wasRecentlyCreated) {
+                    $this->logError(message: "Order created with id {$orderModel->id}");
                     $vendorConfigModel = Config::get('bukukwasiku.vendor.model');
                     $productConfigModel = Config::get('bukukwasiku.product.model');
                     $orderItemConfigModel = Config::get('bukukwasiku.order_item.model');
@@ -179,6 +188,7 @@ class OrderController extends Controller
                         $vendor = $vendorConfigModel::whereId($vendorId)->first();
                         if (!$vendor) {
                             DB::rollBack();
+                            $this->logError(message: "Vendor with id" . $vendor . "Not found!");
                             return Response::json([
                                 "success" => false,
                                 "message" => "Vendor with id" . $vendor . "Not found!",
@@ -202,6 +212,7 @@ class OrderController extends Controller
                                 $product = $productConfigModel::withoutGlobalScopes()->with('attachments')->whereId($vendorProduct['product_id'])->first();
                                 if (!$product) {
                                     DB::rollBack();
+                                    $this->logError(message: "Product with id" . $vendorProduct['product_id'] . " Not found!");
                                     return Response::json([
                                         "success" => false,
                                         "message" => "Product with id" . $vendorProduct['product_id'] . " Not found!",
@@ -230,6 +241,7 @@ class OrderController extends Controller
                                     'opening_amount' => (($category->slug ?? '')  == 'savings') ? $opening_amount : 0,
                                 ]);
 
+                                $this->logError(message: "Order Item created with id {$orderItem->id}");
                                 // MAKE PAYMENT IF IS WALLET
                                 $payment = null;
                                 $updatePaid = false;
@@ -243,6 +255,7 @@ class OrderController extends Controller
                                         $transaction = true;
                                     } catch (Exception $e) {
                                         DB::rollBack();
+                                        $this->logError(message: "Failed with: ". $e->getMessage());
                                         return Response::json([
                                             'success' => false,
                                             "message" => $e->getMessage(),
@@ -250,8 +263,10 @@ class OrderController extends Controller
                                     }
                                 }
                                 static::orderItemRequest($orderItem, $orderModel, $payment, $orderItems, $sendPayment, $transaction, $updatePaid, $vendorProductInitialDeposit);
+                                $this->logError(message: "Failed with: " . json_encode($orderItems));
                             }
                         } else {
+                            $this->logError(message: "Failed with: Failed to create order");
                             DB::rollBack();
                             return Response::json([
                                 "success" => false,
@@ -260,6 +275,7 @@ class OrderController extends Controller
                         }
                     }
                 } else {
+                    $this->logError(message: "Failed with: Failed to create order 2");
                     DB::rollBack();
                     return Response::json([
                         "success" => false,
@@ -268,6 +284,7 @@ class OrderController extends Controller
                     ], 500);
                 }
             } else {
+                $this->logError(message: "Failed with: Failed to create order 2");
                 return Response::json([
                     "success" => false,
                     "message" => "Orders must be an array",
@@ -278,11 +295,13 @@ class OrderController extends Controller
             if (request()->filled("payment")) {
                 if ($request->payment_method == 3) {
                     $response = static::installmentBukuKwaSiku($orderItems);
+                    $this->logError(message: "Instalments => " . json_encode($orderItems));
                 } else if (request()->input('payment') == "installment") {
                     if ($request->amount > 0) {
                         $response = $this->makePayment($request, $orderModel);
                     } else {
                         $response = static::installmentBukuKwaSiku($orderItems);
+                        $this->logError(message: "Instalments => " . json_encode($orderItems));
                     }
                 } else {
                     $response = $this->makePayment($request, $orderModel);
@@ -298,6 +317,7 @@ class OrderController extends Controller
             DB::rollBack();
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
+            $this->logError(message: "getMessage " . $e->getMessage());
             return Response::json([
                 "success" => false,
                 "message" => "Internal server error!",
@@ -334,6 +354,7 @@ class OrderController extends Controller
             ]);
         } else {
             if ($request->amount < 100) {
+                $this->logError(message: "Amount must not be less than 100 TZS");
                 return Response::json(([
                     "success" => false,
                     "message" => "Amount must not be less than 100 TZS"
@@ -350,9 +371,11 @@ class OrderController extends Controller
                 "payment_method" => $request->payment_type == "manual" ? 4 : $request->payment_method,
                 "status" => 'pending'
             ]);
+            $this->logError(message: "Payment created with $payment->id");
         }
         if (!$payment) {
             DB::rollBack();
+            $this->logError(message: "Failed to create payment");
             return Response::json(([
                 "success" => false,
                 "message" => "Failed to create payment"
@@ -360,6 +383,7 @@ class OrderController extends Controller
         } else {
             if ($request->payment_type == "manual") {
                 DB::commit();
+                $this->logError(message: "Payment Received waiting for approval");
                 return Response::json([
                     "success" => true,
                     "message" => "Payment Received waiting for approval",
@@ -378,6 +402,7 @@ class OrderController extends Controller
                     "network" => $payment->payment_method,
                     "callback" => Config::get('bukukwasiku.payment.payment_callback'),
                 ];
+                $this->logError(message: "Payment callback " . Config::get('bukukwasiku.payment.payment_callback'));
                 $response = $client->request('POST', Config::get('bukukwasiku.payment.push_payment_url'), [
                     'form_params' => $data,
                 ]);
@@ -388,6 +413,7 @@ class OrderController extends Controller
                     Log::info($results);
                     if (isset($results['success']) && $results['success'] === true) {
                         DB::commit();
+                        $this->logError(message: "Payment return " . $results['message'] ?? "");
                         return Response::json([
                             "success" => true,
                             "message" =>  $results['message'] ?? "",
@@ -395,6 +421,7 @@ class OrderController extends Controller
                         ]);
                     } else {
                         DB::rollBack();
+                        $this->logError(message: "Payment return Internal Server Error 1");
                         return Response::json([
                             "success" => false,
                             "message" =>  "Internal Server Error 1",
@@ -402,6 +429,7 @@ class OrderController extends Controller
                     }
                 } else {
                     DB::rollBack();
+                    $this->logError(message: "Payment return Internal Server Error 2");
                     return Response::json([
                         "success" => false,
                         "message" =>  "Internal Server Error 2",
@@ -411,6 +439,7 @@ class OrderController extends Controller
                 DB::rollBack();
                 Log::error($e->getMessage());
                 Log::error($e->getTraceAsString());
+                $this->logError(message: "Payment return " . $e->getMessage());
                 return Response::json([
                     "success" => false,
                     "message" =>  $e->getMessage(),
