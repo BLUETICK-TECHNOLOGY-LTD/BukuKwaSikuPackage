@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 abstract class Controller
 {
     //
-    public function logError($title = "BUKUKWA SIKU PACKAGE", $message)
+    public function logError($message, $title = "BUKUKWA SIKU PACKAGE")
     {
         if (env('APP_LOG_ERROR', false)) {
             Log::error("$title : $message");
