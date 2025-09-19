@@ -376,7 +376,7 @@ class OrderController extends Controller
                     "msisdn" => $payment->msisdn,
                     "amount" => in_array($payment->msisdn, $whitelistedPhones) ? 100 : $payment->amount,
                     "network" => $payment->payment_method,
-                    "callback" => Config::get('bukukwasiku.payment.payment_callback'),
+                    "callback" => Config::get('bukukwasiku.payment.order_payment_url'),
                 ];
                 $response = $client->request('POST', Config::get('bukukwasiku.payment.push_payment_url'), [
                     'form_params' => $data,
