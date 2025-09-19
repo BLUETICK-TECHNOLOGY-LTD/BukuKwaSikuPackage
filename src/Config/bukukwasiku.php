@@ -108,7 +108,7 @@ return [
         "base_url" => "http://121.0.0.7:8000/api/",
 
         "payment_url" => env('APP_API_BASE_URL')  . "nafuu/wallet/deposit/callback",
-        "order_payment_url" => env('APP_API_BASE_URL')  . "nafuu/wallet/deposit/callback",
+        "order_payment_url" => env('APP_API_BASE_URL')  . "order-payment-callback",
 
         "payment_callback" => env('APP_API_BASE_URL')  . "payment-callback",
         "notification_callback" =>env('APP_API_BASE_URL')  . "notification-callback",
