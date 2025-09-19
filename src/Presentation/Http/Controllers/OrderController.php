@@ -378,7 +378,7 @@ class OrderController extends Controller
             $this->logError(message: "Failed to create payment");
             return Response::json(([
                 "success" => false,
-                "message" => "Failed to create payment"
+                "message" => "Failed to create payment" 
             ]), 500);
         } else {
             if ($request->payment_type == "manual") {

@@ -268,11 +268,11 @@ class NafuuWalletController extends Controller
                     }
 
                     $request->merge([
-                        'reference' => str_replace('WALLET', '', $request->reference),
+                        'reference' => str_replace(Config::get('bukukwasiku.payment.initial'), '', $request->reference),
                     ]);
                     $payment = $paymentModel::whereId($request->reference)->first();
                     if (!$payment) {
-                        Log::info('PAYMENT VERIFY: Reference Not found');
+                        Log::info('PAYMENT VERIFY: Reference Not found ' . Config::get('bukukwasiku.payment.initial'));
                         return Response::json([
                             "success" => false,
                             "message" => "Reference Not found",
