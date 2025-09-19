@@ -518,6 +518,7 @@ class OrderController extends Controller
         $whitelistedIps = explode(',', env("WHITELISTED_IPS"));
         Log::error("IP: " . $request->ip());
         if (!in_array($request->ip(), $whitelistedIps)) {
+            Log::error("Unauthorized " . $request->ip());
             return Response::json([
                 "message" => "Unauthorized",
                 "api" => $request->ip(),
@@ -529,6 +530,7 @@ class OrderController extends Controller
                 $paymentConfigModel = Config::get('bukukwasiku.payment.model');
                 if ($request->status == "success") {
                     if (!$request->has('reference') || empty($request->reference)) {
+                        Log::error("Reference is required ");
                         return Response::json([
                             "success" => false,
                             "message" => "Reference is required.",
@@ -536,6 +538,7 @@ class OrderController extends Controller
                     }
                     $payment = $paymentConfigModel::where('receipt', $request->payment_reference)->first();
                     if ($payment) {
+                        Log::error("Payment has been utilized.");
                         return Response::json([
                             "success" => false,
                             "message" => "Payment has been utilized.",
@@ -545,6 +548,7 @@ class OrderController extends Controller
                     $reference = str_replace(Config::get('bukukwasiku.payment.initial'), '', $request->reference);
                     $payment = $paymentConfigModel::whereId($reference)->first();
                     if (!$payment) {
+                        Log::error("Reference Not found $reference");
                         return Response::json([
                             "success" => false,
                             "message" => "Reference Not found",
@@ -557,6 +561,7 @@ class OrderController extends Controller
 
                     static::prepareRequestForBukukwasiku($payment);
 
+                    Log::error("Payment Succefully");
                     return Response::json([
                         "success" => true,
                         "message" => "Payment Succefully",
@@ -573,6 +578,7 @@ class OrderController extends Controller
                 "message" => "Internal Server Error",
             ], 500);
         }
+        Log::error("Payment Reference Not found");
         return Response::json([
             "success" => false,
             "message" => "Payment Reference Not found",
