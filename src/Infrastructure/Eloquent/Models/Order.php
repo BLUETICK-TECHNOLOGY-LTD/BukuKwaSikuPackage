@@ -22,7 +22,7 @@ class Order extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = Config::get('bukukwasiku.order.table', 'orders'); 
+        $this->table = Config::get('bukukwasiku.order.table', 'orders');
     }
 
     public static function boot()
@@ -53,7 +53,7 @@ class Order extends Model
         $vendorOrderForeignKey = Config::get('bukukwasiku.vendor_order.foreign_key');
         $orderItemModel = Config::get('bukukwasiku.order_item.model');
         $orderForeignKey = Config::get('bukukwasiku.order.foreign_key');
-        $orderItem = $this->hasManyThrough((new $orderItemModel),(new $vendorOrderModel), $orderForeignKey, $vendorOrderForeignKey)->withoutGlobalScopes();
+        $orderItem = $this->hasManyThrough((new $orderItemModel), (new $vendorOrderModel), $orderForeignKey, $vendorOrderForeignKey)->withoutGlobalScopes();
         if (Request::is("api*")) {
             $orderItem->with("product")->with("vendor");
         }
@@ -64,12 +64,15 @@ class Order extends Model
     {
         $vendorOrderModel = Config::get('bukukwasiku.vendor_order.model');
         $vendorOrderForeignKey = Config::get('bukukwasiku.vendor_order.foreign_key');
-        $orderItemModel = Config::get('bukukwasiku.order_item.model');
+        $orderItemModel = Config::get('bukukwasiku.order_item.model'); //
         $orderForeignKey = Config::get('bukukwasiku.order.foreign_key');
-        $orderItems = $this->hasManyThrough((new $orderItemModel),(new $vendorOrderModel), $orderForeignKey, $vendorOrderForeignKey)
+        $orderServingCheck = Config::get('bukukwasiku.order.check_savings');
+        $orderItems = $this->hasManyThrough((new $orderItemModel), (new $vendorOrderModel), $orderForeignKey, $vendorOrderForeignKey)
             ->withoutGlobalScopes()
-            ->whereHas('product.category', function ($query) {
-                $query->where('slug', 'savings');
+            ->when($orderServingCheck, function ($query) {
+                return $query->whereHas('product.category', function ($query) {
+                    $query->where('slug', 'savings');
+                });
             })
             ->when(Request::is("api*"), function ($query) {
                 $query->with(['product', 'vendor']);

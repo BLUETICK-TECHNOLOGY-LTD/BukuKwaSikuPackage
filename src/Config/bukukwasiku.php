@@ -122,6 +122,7 @@ return [
         "model" => Order::class,
         "foreign_key" => "order_id",
         "savings" => "orderSavingItems",
+        "check_savings" => true,
         "reference" => [
             "prefix" => "BKSO",
             "lenght" => 10,
