@@ -708,6 +708,7 @@ class OrderController extends Controller
                 foreach ($products as $product) {
                     static::sLogError(json_encode($product));
                     $orderItem = $orderItemConfigModel::withoutGlobalScopes()->whereId($product['product_id']);
+                    static::sLogError(json_encode($orderItem->first()),title: "BUKU BEFORE UPDATE");
                     if ($orderItem->count()) {
                         $orderItem->update([
                             'bkb_reference' => $product['reference'],
@@ -741,9 +742,10 @@ class OrderController extends Controller
                             'due_amount' => $product['schedule']['due_amount'] ?? 0,
                             'amount_to_pay' => $product['schedule']['amount_to_pay'] ?? 0,
                             'push_amount' => $product['schedule']['push_amount'] ?? 0,
-                        ]));
+                        ]), title: "BUKU UPDATE DATA");
                     }
                     $orderItem = $orderItem->first();
+                    static::sLogError(json_encode($orderItem), title: "BUKU AFTER UPDATE");
                     $vendorOrder = $orderItem->vendorOrder ?? null;
                     $vendor = $orderItem->vendor ?? null;
                     if ($vendorOrder) {
