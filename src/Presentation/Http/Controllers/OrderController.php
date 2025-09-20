@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
@@ -708,7 +709,7 @@ class OrderController extends Controller
                 foreach ($products as $product) {
                     static::sLogError(json_encode($product));
                     $orderItem = $orderItemConfigModel::withoutGlobalScopes()->whereId($product['product_id']);
-                    static::sLogError(json_encode($orderItem->first()),title: "BUKU BEFORE UPDATE");
+                    static::sLogError(json_encode($orderItem->first()), title: "BUKU BEFORE UPDATE");
                     if ($orderItem->count()) {
                         $orderItem->update([
                             'bkb_reference' => $product['reference'],
@@ -795,19 +796,22 @@ class OrderController extends Controller
             }
             $orderConfigModel = Config::get('bukukwasiku.order.model');
             $productCategoryConfigModel = Config::get('bukukwasiku.product_category.model');
+            $productCategoryConfigTable = Config::get('bukukwasiku.product_category.table');
             $orderConfigModel::whereId($order->id)->update([
                 'status' => $status
             ]);
 
             $order = $orderConfigModel::whereId($order->id)->first();
             if ($order->status == "paid") {
-                foreach ($order->orderItems as $orderItem) {
-                    $category = $productCategoryConfigModel::whereId($orderItem->product->category_id ?? null)->first();
-                    if (($category->slug ?? "") == Config::get('bukukwasiku.product_category.membership_slug')) {
-                        if ($order->orderItems()->count() > 1) {
-                            break;
+                if (Schema::hasTable($productCategoryConfigTable)) {
+                    foreach ($order->orderItems as $orderItem) {
+                        $category = $productCategoryConfigModel::whereId($orderItem->product->category_id ?? null)->first();
+                        if (($category->slug ?? "") == Config::get('bukukwasiku.product_category.membership_slug')) {
+                            if ($order->orderItems()->count() > 1) {
+                                break;
+                            }
+                            static::registerMembership($orderItem, $order);
                         }
-                        static::registerMembership($orderItem, $order);
                     }
                 }
             }
