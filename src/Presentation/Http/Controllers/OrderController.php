@@ -706,6 +706,7 @@ class OrderController extends Controller
             if (isset($results['success']) && $results['success'] === true) {
                 $products = $results['products'];
                 foreach ($products as $product) {
+                    static::sLogError(json_encode($product));
                     $orderItem = $orderItemConfigModel::withoutGlobalScopes()->whereId($product['product_id'])->first();
                     if ($orderItem) {
                         $orderItem->update([
@@ -724,6 +725,23 @@ class OrderController extends Controller
                             'amount_to_pay' => $product['schedule']['amount_to_pay'] ?? 0,
                             'push_amount' => $product['schedule']['push_amount'] ?? 0,
                         ]);
+
+                        static::sLogError(json_encode([
+                            'bkb_reference' => $product['reference'],
+                            'paid_amount' => $product['schedule']['total_paid_amount'] ?? 0,
+                            'no_of_installment' => $product['schedule']['no_of_installment'] ?? 0,
+                            'no_of_paid_installment' => $product['schedule']['no_of_paid_installment'] ?? 0,
+                            'no_of_unpaid_installment' => $product['schedule']['no_of_unpaid_installment'] ?? 0,
+                            'amount_per_day' => $product['schedule']['amount_per_day'] ?? 0,
+                            'total_paid_amount' => $product['schedule']['total_paid_amount'] ?? 0,
+                            'next_payment_date' => $product['schedule']['next_payment_date'] ?? 0,
+                            'start_payment_date' => $product['schedule']['start_payment_date'] ?? 0,
+                            'outstanding_amount' => $product['schedule']['outstanding_amount'] ?? 0,
+                            'due_days' => $product['schedule']['due_days'] ?? 0,
+                            'due_amount' => $product['schedule']['due_amount'] ?? 0,
+                            'amount_to_pay' => $product['schedule']['amount_to_pay'] ?? 0,
+                            'push_amount' => $product['schedule']['push_amount'] ?? 0,
+                        ]));
                     }
                     $vendorOrder = $orderItem->vendorOrder ?? null;
                     $vendor = $orderItem->vendor ?? null;

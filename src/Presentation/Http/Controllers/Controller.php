@@ -13,4 +13,11 @@ abstract class Controller
             Log::error("$title : $message");
         }
     }
+
+    public static function sLogError($message, $title = "BUKUKWA SIKU PACKAGE")
+    {
+        if (env('APP_LOG_ERROR', false)) {
+            Log::error("$title : $message");
+        }
+    }
 }
