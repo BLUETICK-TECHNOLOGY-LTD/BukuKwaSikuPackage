@@ -707,8 +707,8 @@ class OrderController extends Controller
                 $products = $results['products'];
                 foreach ($products as $product) {
                     static::sLogError(json_encode($product));
-                    $orderItem = $orderItemConfigModel::withoutGlobalScopes()->whereId($product['product_id'])->first();
-                    if ($orderItem) {
+                    $orderItem = $orderItemConfigModel::withoutGlobalScopes()->whereId($product['product_id']);
+                    if ($orderItem->count()) {
                         $orderItem->update([
                             'bkb_reference' => $product['reference'],
                             'paid_amount' => $product['schedule']['total_paid_amount'] ?? 0,
@@ -743,6 +743,7 @@ class OrderController extends Controller
                             'push_amount' => $product['schedule']['push_amount'] ?? 0,
                         ]));
                     }
+                    $orderItem = $orderItem->first();
                     $vendorOrder = $orderItem->vendorOrder ?? null;
                     $vendor = $orderItem->vendor ?? null;
                     if ($vendorOrder) {
