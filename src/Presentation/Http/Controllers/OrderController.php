@@ -33,10 +33,13 @@ class OrderController extends Controller
         };
 
         $orderModel = Config::get('bukukwasiku.order.model');
+        $orderServingCheck = Config::get('bukukwasiku.order.check_savings');
         $orders = $orderModel::where('ordered_id', Auth::user()->id ?? null)
             ->with(['orderItems.product.category', 'payment'])
-            ->whereHas('orderItems', function ($orderItems) use ($categoryFilter) {
-                $orderItems->whereHas('product.category', $categoryFilter);
+            ->when($orderServingCheck, function ($query) use ($categoryFilter) {
+                return $query->whereHas('orderItems', function ($orderItems) use ($categoryFilter) {
+                    $orderItems->whereHas('product.category', $categoryFilter);
+                });
             })
             ->latest()
             ->take(20)
@@ -149,7 +152,7 @@ class OrderController extends Controller
                         ]
                     );
                 }
-                
+
                 // CHECK IF IS SUFFICIENT BALANCE WHEN SELECTED PAYMENT METHOD IS WALLET
                 $this->logError(message: "CHECK IF IS SUFFICIENT BALANCE WHEN SELECTED PAYMENT METHOD IS WALLET");
                 if ($request->payment_method == Config::get('bukukwasiku.transaction.nafuu_id')) { // is nafuu wallet
@@ -255,7 +258,7 @@ class OrderController extends Controller
                                         $transaction = true;
                                     } catch (Exception $e) {
                                         DB::rollBack();
-                                        $this->logError(message: "Failed with: ". $e->getMessage());
+                                        $this->logError(message: "Failed with: " . $e->getMessage());
                                         return Response::json([
                                             'success' => false,
                                             "message" => $e->getMessage(),
@@ -378,7 +381,7 @@ class OrderController extends Controller
             $this->logError(message: "Failed to create payment");
             return Response::json(([
                 "success" => false,
-                "message" => "Failed to create payment" 
+                "message" => "Failed to create payment"
             ]), 500);
         } else {
             if ($request->payment_type == "manual") {
