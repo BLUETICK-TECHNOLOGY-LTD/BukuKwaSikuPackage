@@ -35,11 +35,11 @@ class OrderController extends Controller
         $orderModel = Config::get('bukukwasiku.order.model');
         $orderServingCheck = Config::get('bukukwasiku.order.check_savings');
         $orders = $orderModel::where('ordered_id', Auth::user()->id ?? null)
-            ->with(['orderItems.product.category', 'payment'])
             ->when($orderServingCheck, function ($query) use ($categoryFilter) {
-                return $query->whereHas('orderItems', function ($orderItems) use ($categoryFilter) {
-                    $orderItems->whereHas('product.category', $categoryFilter);
-                });
+                return $query->with(['orderItems.product.category', 'payment'])
+                    ->whereHas('orderItems', function ($orderItems) use ($categoryFilter) {
+                        $orderItems->whereHas('product.category', $categoryFilter);
+                    });
             })
             ->latest()
             ->take(20)
