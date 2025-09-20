@@ -700,7 +700,7 @@ class OrderController extends Controller
 
     public static function updateRefenceInfos($resultData)
     {
-        $orderItemConfigModel = Config::get('bukukwasiku.payment.model');
+        $orderItemConfigModel = Config::get('bukukwasiku.order_item.model');
         if (!empty($resultData)) {
             $results = json_decode($resultData, TRUE);
             if (isset($results['success']) && $results['success'] === true) {
