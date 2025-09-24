@@ -42,7 +42,7 @@ class VendorOrder extends Model
     public function orderItems()
     {
         $orderModel = Config::get('bukukwasiku.order_item.model');
-        $orderForeignKey = Config::get('bukukwasiku.order_item.foreign_key');
+        $orderForeignKey = Config::get('bukukwasiku.order.foreign_key');
         $orderItem = $this->hasMany((new $orderModel),  $orderForeignKey)->withoutGlobalScopes();
         if (Request::is("api*")) {
             $withs = Config::get('bukukwasiku.vendor_order.order_items_with');
