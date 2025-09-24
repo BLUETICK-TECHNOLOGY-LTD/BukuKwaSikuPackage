@@ -2,6 +2,7 @@
 
 namespace BukukwasikuPackage\Infrastructure\Eloquent\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
@@ -53,5 +54,20 @@ class VendorOrder extends Model
             }
         }
         return $orderItem->orderBy('id', 'asc');
+    }
+
+    public function scopeSearch($query)
+    {
+        $startDate = Carbon::createFromTimeString(request()->start_date)->startOfDay();
+        $endDate = Carbon::createFromTimeString(request()->end_date)->endOfDay();
+        $status = request()->status;
+
+        return $query->when($startDate && $endDate, function ($q) use ($startDate, $endDate) {
+            $q->whereBetween('created_at', [$startDate, $endDate]);
+        })->when($status, function ($q) use ($status) {
+                $q->whereHas('order', function ($query) use ($status) {
+                    $query->where('status', $status);
+                });
+            });
     }
 }
