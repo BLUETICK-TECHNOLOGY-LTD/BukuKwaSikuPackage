@@ -112,4 +112,57 @@ class OrderItem extends Model
         $vendorOrderForeignKey = Config::get('bukukwasiku.vendor_order.foreign_key');
         return $this->belongsTo((new $vendorOrderModel), $vendorOrderForeignKey)->withoutGlobalScopes();
     }
+
+    public function scopeSearch($query)
+    {
+        $filterable = [
+            "vendor_order_id",
+            "bkb_reference",
+            "product_id",
+            "quantity",
+            "price_name",
+            "vendor_id",
+            "price",
+            "paid_amount",
+            "n_card",
+            "no_of_installment",
+            "no_of_paid_installment",
+            "no_of_unpaid_installment",
+            "amount_per_day",
+            "total_paid_amount",
+            "next_payment_date",
+            "start_payment_date",
+            "outstanding_amount",
+            "due_days",
+            "frequency",
+            "initial_deposit",
+            "push_amount",
+            "due_amount",
+            "amount_to_pay",
+            "opening_amount",
+            "withdrawn_at",
+            "withdrawn_amount",
+            "verified_at",
+            "charge_amount",
+            "type",
+        ];
+
+        foreach ($filterable as $field) {
+            if (request()->filled($field)) {
+                $value = request()->input($field);
+                if (in_array($field, ['bkb_reference', 'price_name', 'frequency'])) {
+                    $query->where($field, 'LIKE', "%$value%");
+                } else {
+                    $query->where($field, $value);
+                }
+            }
+        }
+        if (request()->filled('start_date')) {
+            $query->whereDate('created_at', '>=', request()->input('start_date'));
+        }
+        if (request()->filled('end_date')) {
+            $query->whereDate('created_at', '<=', request()->input('end_date'));
+        }
+        return $query;
+    }
 }
