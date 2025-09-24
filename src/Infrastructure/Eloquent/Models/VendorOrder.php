@@ -59,8 +59,8 @@ class VendorOrder extends Model
     public function scopeSearch($query)
     {
 
-        $startDate = Carbon::createFromTimeString(request()->start_date??Carbon::now()->startOfYear()->format('Y-m-d H:i:s'))->startOfDay();
-        $endDate = Carbon::createFromTimeString(request()->end_date??Carbon::now()->format('Y-m-d H:i:s'))->endOfDay();
+        $startDate = Carbon::parse(request()->start_date??Carbon::now()->startOfYear()->format('Y-m-d H:i:s'))->startOfDay();
+        $endDate = Carbon::parse(request()->end_date??Carbon::now()->format('Y-m-d H:i:s'))->endOfDay();
         $status = request()->status;
 
         return $query->when($startDate && $endDate, function ($q) use ($startDate, $endDate) {
