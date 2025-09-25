@@ -3,6 +3,7 @@
 namespace BukukwasikuPackage\Infrastructure\Eloquent\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
@@ -47,7 +48,7 @@ class OrderItem extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = Config::get('bukukwasiku.order_item.table', 'order_items'); 
+        $this->table = Config::get('bukukwasiku.order_item.table', 'order_items');
     }
 
     public static function boot()
@@ -163,6 +164,46 @@ class OrderItem extends Model
         if (request()->filled('end_date')) {
             $query->whereDate('created_at', '<=', request()->input('end_date'));
         }
+        if (request()->filled('start_next_payment_date')) {
+            $query->whereDate('next_payment_date', '>=', request()->input('start_next_payment_date'));
+        }
+        if (request()->filled('end_next_payment_date')) {
+            $query->whereDate('next_payment_date', '<=', request()->input('end_next_payment_date'));
+        }
+        if (request()->filled('status')) {
+            $status = request()->input('status');
+            if ($status == "paid") {
+                $query->where("outstanding_amount", "<=", 0);
+            }
+            if ($status == "paid") {
+                $query->where("outstanding_amount", "<=", 0);
+            }
+            if ($status == "pending") {
+                $query->where("outstanding_amount", ">", 0)->where("paid_amount", ">", "0");
+            }
+            if ($status == "not_paid") {
+                $query->where("outstanding_amount", ">", 0)->where("paid_amount", "<=", "0");
+            }
+        }
         return $query;
     }
+
+    public function status(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if ($this->outstanding_amount <= 0) {
+                    return "paid";
+                }
+                if ($this->outstanding_amount > 0 && $this->paid_amount > 0) {
+                    return "pending";
+                }
+                if ($this->outstanding_amount > 0 && $this->paid_amount <= 0) {
+                    return "not_paid";
+                }
+            }
+        );
+    }
+
+    public $appends = ["status"];
 }
