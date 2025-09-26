@@ -87,7 +87,7 @@ class OrderItem extends Model
         $existsWiths = [];
         if (is_array($withs)) {
             foreach ($withs as $with) {
-                if (class_exists($with)) {
+                if (method_exists($productModel, $with)) {
                     $existsWiths[] = $with;
                 }
             }
