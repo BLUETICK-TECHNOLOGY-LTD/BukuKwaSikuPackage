@@ -797,6 +797,7 @@ class OrderController extends Controller
             }
             $orderConfigModel = Config::get('bukukwasiku.order.model');
             $productCategoryConfigModel = Config::get('bukukwasiku.product_category.model');
+            $productConfigModel = Config::get('bukukwasiku.product.model');
             $productCategoryConfigTable = Config::get('bukukwasiku.product_category.table');
             $orderConfigModel::whereId($order->id)->update([
                 'status' => $status
@@ -814,6 +815,9 @@ class OrderController extends Controller
                             static::registerMembership($orderItem, $order);
                         }
                     }
+                }
+                foreach ($order->orderItems as $orderItem) {
+                    $productConfigModel::where("id", $orderItem->product_id)->update(['status' => 'paid']);
                 }
             }
             $walletConfigModel = Config::get('bukukwasiku.wallet.model');
