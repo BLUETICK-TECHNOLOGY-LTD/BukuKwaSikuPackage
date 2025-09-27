@@ -354,7 +354,7 @@ class OrderController extends Controller
         $paymentConfigModel = Config::get('bukukwasiku.payment.model');
         if ($paymentId) {
             $payment = $paymentConfigModel::whereId($paymentId)->first();
-            Request::merge([
+            $request->merge([
                 'payment_type' => 'online'
             ]);
         } else {
@@ -491,8 +491,8 @@ class OrderController extends Controller
                     DB::commit();
                     $results['success'] = $results['success'] ? "success" : "failed";
                     $results['reference'] = Config::get('bukukwasiku.payment.initial') . $payment->id;
-                    Request::merge($results);
-                    return $this->orderPaymentCallback(new Request());
+                    request()->merge($results);
+                    return $this->orderPaymentCallback(request());
                 } else {
                     DB::rollBack();
                     return Response::json([

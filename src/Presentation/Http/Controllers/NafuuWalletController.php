@@ -149,7 +149,7 @@ class NafuuWalletController extends Controller
 
         DB::beginTransaction();
         if ($payment) {
-            Request::merge([
+            $request->merge([
                 'payment_type' => 'online'
             ]);
         } else {
