@@ -21,8 +21,7 @@ return new class extends Migration
             $table->string("msisdn")->nullable();
             $table->string("receipt")->nullable();
             $table->string("remarks")->nullable();
-            $table->double('amount')->default(0);
-            $table->string('type')->after('amount');
+            $table->string('type');
             $table->nullableUuidMorphs('payable');
             $table->timestamps();
         });

@@ -39,7 +39,7 @@ return new class extends Migration
             $table->integer("quantity")->default(0);
             $table->string("price_name")->nullable();
             $table->double("price")->default(0);
-            $table->double('paid_amount')->default(0)->after('price');
+            $table->double('paid_amount')->default(0);
             $table->uuid("vendor_id")->nullable();
             $table->foreign("vendor_id")->references("id")->on("vendors")->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
