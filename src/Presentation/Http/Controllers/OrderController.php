@@ -816,8 +816,10 @@ class OrderController extends Controller
                         }
                     }
                 }
-                foreach ($order->orderItems as $orderItem) {
-                    $productConfigModel::where("id", $orderItem->product_id)->update(['status' => 'paid']);
+                if (Config::get('bukukwasiku.product.can_update_status', true)) {
+                    foreach ($order->orderItems as $orderItem) {
+                        $productConfigModel::where("id", $orderItem->product_id)->update(['status' => 'paid']);
+                    }
                 }
             }
             $walletConfigModel = Config::get('bukukwasiku.wallet.model');

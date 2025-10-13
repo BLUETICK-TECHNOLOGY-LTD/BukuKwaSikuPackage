@@ -65,6 +65,7 @@ return [
         "charge_function" => "checkCharges",
         "model" => Product::class,
         "foreign_key" => "product_id",
+        "can_update_status" => true,
         "order_with" => ['team', 'teamAway', 'stadium', 'category'],
     ],
 
