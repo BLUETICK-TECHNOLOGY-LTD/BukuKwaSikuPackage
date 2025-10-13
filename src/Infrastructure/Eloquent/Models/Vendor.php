@@ -14,6 +14,8 @@ class Vendor extends Model
         $this->table = Config::get('bukukwasiku.vendor.table', 'vendors');
     }
 
+    public $incrementing = false;
+    
     public static function boot()
     {
         parent::boot();
