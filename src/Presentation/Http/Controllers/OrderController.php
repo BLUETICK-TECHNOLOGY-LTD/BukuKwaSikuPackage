@@ -176,8 +176,8 @@ class OrderController extends Controller
                 $orderConfigModel = Config::get('bukukwasiku.order.model');
                 $orderModel = $orderConfigModel::create(
                     [
-                        'ordered_id' => Auth::user()->id,
-                        'ordered_type' => get_class(Auth::user()),
+                        'ordered_id' => $request->input('ordered_id', Auth::user()->id),
+                        'ordered_type' => $request->input('ordered_type',  get_class(Auth::user())),
                         'amount' => $totalAmount,
                         'status' => 'draft'
                     ]
