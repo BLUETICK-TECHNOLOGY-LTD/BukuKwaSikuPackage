@@ -404,12 +404,12 @@ class BukuKwaSikuPayment extends Controller
                 $orderItems = $order->orderItems;
                 $payment = (array) $payment;
                 $payment['method_id'] = $payment['payment_method'];
-                $params[] = [
-                    "payment" => $payment,
-                    "amount" => $payment['amount'],
-                    "reference" => null
-                ];
                 foreach ($orderItems as $product) {
+                    $params[] = [
+                        "payment" => $payment,
+                        "amount" => $payment['amount'],
+                        "reference" => $product->bkb_reference
+                    ];
                     $references[] = $product->bkb_reference;
                 }
             } else {
