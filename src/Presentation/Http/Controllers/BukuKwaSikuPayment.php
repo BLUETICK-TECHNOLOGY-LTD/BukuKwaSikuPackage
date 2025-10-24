@@ -379,6 +379,10 @@ class BukuKwaSikuPayment extends Controller
         $orderConfigModel = Config::get('bukukwasiku.order.model');
         $orderItemConfigModel = Config::get('bukukwasiku.order_item.model');
         $payment = $paymentConfigModel::whereId($paymentId)->toBase()->first();
+        $payable = $payment->payable;
+        if ($payable instanceof $orderConfigModel) {
+            OrderController::prepareRequestForBukukwasiku($payment);
+        }
         $params = [];
         $references = [];
         if ($payment->references) {
