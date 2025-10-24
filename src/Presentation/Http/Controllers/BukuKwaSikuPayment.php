@@ -376,6 +376,7 @@ class BukuKwaSikuPayment extends Controller
     public function sendPaymentToBukuKwaSiku($paymentId)
     {
         $paymentConfigModel = Config::get('bukukwasiku.payment.model');
+        $orderConfigModel = Config::get('bukukwasiku.order.model');
         $orderItemConfigModel = Config::get('bukukwasiku.order_item.model');
         $payment = $paymentConfigModel::whereId($paymentId)->toBase()->first();
         $params = [];
@@ -398,15 +399,32 @@ class BukuKwaSikuPayment extends Controller
                 }
             }
         } else {
-            $product = $orderItemConfigModel::withoutGlobalScopes()->where('id', $payment->payable_id)->first();
-            $payment = (array) $payment;
-            $payment['method_id'] = $payment['payment_method'];
-            $params[] = [
-                "payment" => $payment,
-                "amount" => $payment['amount'],
-                "reference" => $product->bkb_reference,
-            ];
-            $references[] = $product->bkb_reference;
+            $order = $orderConfigModel::withoutGlobalScopes()->whereId($payment->payable_id)->first();
+            if ($order) {
+                $orderItems = $order->orderItems;
+                $payment = (array) $payment;
+                $payment['method_id'] = $payment['payment_method'];
+                $params[] = [
+                    "payment" => $payment,
+                    "amount" => $payment['amount'],
+                    "reference" => null
+                ];
+                foreach ($orderItems as $product) {
+                    $references[] = $product->bkb_reference;
+                }
+            } else {
+                $product = $orderItemConfigModel::withoutGlobalScopes()->where('id', $payment->payable_id)->first();
+                if ($product) {
+                    $payment = (array) $payment;
+                    $payment['method_id'] = $payment['payment_method'];
+                    $params[] = [
+                        "payment" => $payment,
+                        "amount" => $payment['amount'],
+                        "reference" => $product->bkb_reference,
+                    ];
+                    $references[] = $product->bkb_reference;
+                }
+            }
         }
 
         $client = new Client([
